@@ -1,29 +1,21 @@
 var canvas;
 var context;
-var screenH;
-var screenW;
+var screenH = window.innerHeight;
+var screenW = window.innerWidth;
 var stars = [];
-var fps = 50;
+var fps = 30;
 var numStars = 2000;
 
 $('document').ready(function() {
-  
-  // Calculate the screen size
-	screenH = $(window).height();
-	screenW = $(window).width();
-	
+  	
 	// Get the canvas
 	canvas = $('#cnv');
-	
-	// Fill out the canvas
-	canvas.attr('height', screenH);
-	canvas.attr('width', screenW);
 	context = canvas[0].getContext('2d');
 	
 	// Create all the stars
 	for(var i = 0; i < numStars; i++) {
-		var x = Math.round(Math.random() * screenW);
-		var y = Math.round(Math.random() * screenH);
+		var x = Math.round(Math.random() * screenH);
+		var y = Math.round(Math.random() * screenW);
 		var length = 1 + Math.random() * 2;
 		var opacity = Math.random();
 		
