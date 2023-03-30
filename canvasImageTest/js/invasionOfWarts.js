@@ -14,6 +14,8 @@ var laserFramesPaths = [
     "../images/spark/frames/spark-preview5.png"
 ];
 var laserBullets = [];
+const exitImage = new Image();
+exitImage.src = "../images/Exit_BTN.png";
 
 window.onload = function() {
     canvas = document.getElementById("cnv");
@@ -24,13 +26,23 @@ window.onload = function() {
     savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
     
     spaceship = new Spaceship(canvas.width/2, canvas.height/2, 0.15, 0.15);
-    
+
     animate();
 
     // key listeners
     document.addEventListener("keydown", controllerPressed);
     document.addEventListener("keyup", controllerReleased);
-    
+    document.addEventListener("click", function (e) {
+        let x = e.clientX;
+        let y = e.clientY; 
+        //console.log("x: " + x + ", y: " + y);
+        if(x > 15 && x < 15 + exitImage.width * 0.2){
+            if(y > 15 && y < 15 + exitImage.height * 0.2){
+                //console.log("in"); 
+                window.location.href = "../html/mainMenu.html";
+            } 
+        }
+    });
     // interval in which canvas is gonna be updated
     //setInterval(update, 1000 / FPS);
 }
@@ -53,9 +65,14 @@ function animate(){
     //ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(savedCanvas, 0, 0);
     
+    // draw exit button
+    if(exitImage){
+        ctx.drawImage(exitImage, 15, 15, exitImage.width * 0.2, exitImage.height * 0.2);
+    }
+    //draw spaceship
     spaceship.update();
     laserBullets.forEach(laser => {
-        
+        // draw laser bullets shooted
         laser.update();
         if(laser.shooted) {
             laser.xSpeed += LASER_ACC_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
@@ -77,6 +94,8 @@ function animate(){
 
 class Spaceship {
     constructor(x, y, widthMult, heightMult) {
+        this.x = x;
+        this.y = y;
         this.rotation = 0;
         this.accelerating = false;
         this.xSpeed = 0;
@@ -89,8 +108,6 @@ class Spaceship {
             this.image = image;
             this.width = image.width * widthMult;
             this.height = image.height * heightMult;
-            this.x = x - this.width / 2;
-            this.y = y - this.height / 2;
         }  
     }
 
@@ -211,8 +228,8 @@ function controllerPressed(/** @type {KeyboardEvent}*/ ev) {
         spaceship.rotation = ROT_SPEED / 180 * Math.PI / FPS;
     }
     if(ev.key === " ") { // shooting
-        var xPos = 30 * Math.cos(spaceship.angle);
-        var yPos = 30 * Math.sin(spaceship.angle);
+        var xPos = 32 * Math.cos(spaceship.angle);
+        var yPos = 32 * Math.sin(spaceship.angle);
         laserBullets.push(new LaserBullet(spaceship.x + xPos, spaceship.y + yPos, true, spaceship.angle, laserFramesPaths));
         laserBullets.push(new LaserBullet(spaceship.x - xPos, spaceship.y - yPos, true, spaceship.angle, laserFramesPaths));
     }
