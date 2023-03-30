@@ -7,11 +7,11 @@ const DEC_MULT = 0.5;
 var canvas, ctx, savedCanvas; 
 var warts, spaceship;
 var laserFramesPaths = [
-    "images/spark/frames/spark-preview1.png",
-    "images/spark/frames/spark-preview2.png",
-    "images/spark/frames/spark-preview3.png",
-    "images/spark/frames/spark-preview4.png",
-    "images/spark/frames/spark-preview5.png"
+    "../images/spark/frames/spark-preview1.png",
+    "../images/spark/frames/spark-preview2.png",
+    "../images/spark/frames/spark-preview3.png",
+    "../images/spark/frames/spark-preview4.png",
+    "../images/spark/frames/spark-preview5.png"
 ];
 var laserBullets = [];
 
@@ -84,7 +84,7 @@ class Spaceship {
         this.angle = 0; // angle to face spaceship up
 
         const image = new Image();
-        image.src = "images/x-wing.png";
+        image.src = "../images/x-wing.png";
         image.onload = () => {
             this.image = image;
             this.width = image.width * widthMult;
