@@ -1,7 +1,7 @@
 const FPS = 30; // not really fps, used it before as fps with setInterval -> better use requestAnimationFrame
 const ROT_SPEED = 45;
 const ACC_SPEED = 0.5;
-const LASER_ACC_SPEED = 2;
+const LASER_ACC_SPEED = 100;
 const DEC_MULT = 0.5;
 
 var canvas, ctx, savedCanvas; 
@@ -75,8 +75,8 @@ function animate(){
         // draw laser bullets shooted
         laser.update();
         if(laser.shooted) {
-            laser.xSpeed += LASER_ACC_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
-            laser.ySpeed -= LASER_ACC_SPEED * Math.cos(laser.angle + 90 / 180 * Math.PI) / FPS;
+            laser.xSpeed = LASER_ACC_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
+            laser.ySpeed = -LASER_ACC_SPEED * Math.cos(laser.angle + 90 / 180 * Math.PI) / FPS;
         }
     });
     if(spaceship.accelerating) { // accelerate spaceship
@@ -150,23 +150,6 @@ class LaserBullet {
                 this.height = img.height * 0.75;
             });
         }
-        /*
-        this.images.forEach(image => {
-            image.onload = () => {
-                this.images = image;
-                this.width = image.width * 0.75;
-                this.height = image.height * 0.75;
-            } 
-        });
-        
-        var image = new Image();
-        image.src = "images/spark/frames/spark-preview1.png";
-        image.onload = () => {
-            this.image = image;
-            this.width = image.width * 0.75;
-            this.height = image.height * 0.75;
-        } 
-        */ 
     }
 
     draw(img) {
