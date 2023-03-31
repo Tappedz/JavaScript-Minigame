@@ -1,11 +1,11 @@
 const FPS = 30; // not really fps, used it before as fps with setInterval -> better use requestAnimationFrame
 const ROT_SPEED = 45;
 const ACC_SPEED = 0.5;
-const LASER_ACC_SPEED = 150;
+const LASER_SPEED = 150;
 const DEC_MULT = 0.5;
 
 var canvas, ctx, savedCanvas; 
-var warts, spaceship;
+var spaceship;
 var laserFramesPaths = [
     "../images/spark/frames/spark-preview1.png",
     "../images/spark/frames/spark-preview2.png",
@@ -61,8 +61,7 @@ function resizeCanvas() {
 
 function animate(){
     requestAnimationFrame(animate);
-    //ctx.fillStyle = "white";
-    //ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     ctx.putImageData(savedCanvas, 0, 0);
     
     // draw exit button
@@ -75,8 +74,8 @@ function animate(){
         // draw laser bullets shooted
         laser.update();
         if(laser.shooted) {
-            laser.xSpeed = LASER_ACC_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
-            laser.ySpeed = -LASER_ACC_SPEED * Math.cos(laser.angle + 90 / 180 * Math.PI) / FPS;
+            laser.xSpeed = LASER_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
+            laser.ySpeed = -LASER_SPEED * Math.cos(laser.angle + 90 / 180 * Math.PI) / FPS;
         }
     });
     if(spaceship.accelerating) { // accelerate spaceship
@@ -183,20 +182,30 @@ class LaserBullet {
     }
 }
 
+class Wart {
+    constructor(x, y, hp, angle, speed) {
+        this.x = x;
+        this.y = y;
+        this.hp = hp;
+        this.angle = angle;
+        this.xSpeed = speed * Math.cos(this.angle);
+        this.ySpeed = speed * Math.sin(this.angle);
+    }
+
+    draw() {
+
+    }
+
+    update() {
+
+    }
+}
+
 class Syringe {
     constructor(x, y, image) {
         this.x = x;
         this.y = y;
         this.image = image;
-    }
-}
-
-class Wart {
-    constructor(x, y, radius, speed) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.speed = speed;
     }
 }
 
@@ -231,7 +240,7 @@ function controllerReleased(/** @type {KeyboardEvent}*/ ev) {
 }
 
 
-function checkCanvasLimits() {
+function checkCanvasLimits() { // checks if spaceship goes off limits and set it on the other side of the canvas
     if(spaceship.x < 0 - spaceship.width) {
         spaceship.x = canvas.width + spaceship.width;
     }
@@ -246,8 +255,21 @@ function checkCanvasLimits() {
     }
 }
 
-/*
-function generateWarts() {
-    var wartsNum = Math.random()
+function generateWarts(level) {
+    var wartsNum;
+    if(level == 1) {
+        wartsNum = getRandomInteger(2, 4);
+    }
+    else if(level == 2) {
+        wartsNum = getRandomInteger(4, 6);
+    }
+    else if(level == 3) {
+        wartsNum = getRandomInteger(6, 8);
+    }
 }
-*/
+
+function getRandomInteger(min, max) { // function from Math.random documentation
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
