@@ -1,7 +1,7 @@
 const FPS = 30; // not really fps, used it before as fps with setInterval -> better use requestAnimationFrame
 const ROT_SPEED = 45;
 const ACC_SPEED = 0.5;
-const LASER_ACC_SPEED = 100;
+const LASER_ACC_SPEED = 150;
 const DEC_MULT = 0.5;
 
 var canvas, ctx, savedCanvas; 
