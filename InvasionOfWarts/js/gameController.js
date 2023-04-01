@@ -21,11 +21,11 @@ const laserFramesPaths = [
 ];
 //paths for laset hit images
 const laserHitFramesPaths = [
-    "../images/hit/Hits-3-1.png",
-    "../images/hit/Hits-3-2.png",
-    "../images/hit/Hits-3-3.png",
-    "../images/hit/Hits-3-4.png",
-    "../images/hit/Hits-3-5.png"
+    "../images/hit/Hits-3_1.png",
+    "../images/hit/Hits-3_2.png",
+    "../images/hit/Hits-3_3.png",
+    "../images/hit/Hits-3_4.png",
+    "../images/hit/Hits-3_5.png"
 ];
 
 var canvas, ctx, savedCanvas, wartGenIntId;
