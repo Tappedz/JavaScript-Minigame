@@ -1,8 +1,14 @@
 const FPS = 30; // not really fps, used it before as fps with setInterval -> better use requestAnimationFrame
+// spaceship constants
 const ROT_SPEED = 45;
 const ACC_SPEED = 0.5;
-const LASER_SPEED = 150;
 const DEC_MULT = 0.5;
+// laser constants
+const LASER_SPEED = 150;
+// warts constants
+const WART_SPEED = 20;
+
+const exitImage = new Image();
 
 var canvas, ctx, savedCanvas; 
 var spaceship;
@@ -14,19 +20,18 @@ var laserFramesPaths = [
     "../images/spark/frames/spark-preview5.png"
 ];
 var laserBullets = [];
-const exitImage = new Image();
-exitImage.src = "../images/Exit_BTN.png";
-var wart;
+
 window.onload = function() {
     canvas = document.getElementById("cnv");
     ctx = canvas.getContext("2d");
+    exitImage.src = "../images/Exit_BTN.png";
     resizeCanvas();
 
     //save background before drawing
     savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
     
     spaceship = new Spaceship(canvas.width/2, canvas.height/2, 0.15, 0.15);
-
+    
     generateWarts(1);
 
     animate();
@@ -64,6 +69,7 @@ function resizeCanvas() {
 function animate(){
     requestAnimationFrame(animate);
 
+    // recover canvas before drawing 
     ctx.putImageData(savedCanvas, 0, 0);
     
     // draw exit button
@@ -74,18 +80,30 @@ function animate(){
     spaceship.update();
 
     warts.forEach(wart => {
-        // draw laser bullets shooted
+        // draw warts
+        wart.update();
         wart.xFocus = spaceship.x;
         wart.yFocus = spaceship.y;
-        wart.update();
+        wart.xSpeed = WART_SPEED * Math.sin(wart.angle) / FPS;
+        wart.ySpeed = -WART_SPEED * Math.cos(wart.angle) / FPS;
+        if(wart.isHitted()){
+            console.log("hit " + wart.x + "," + wart.y);
+        }
     });
 
+    var numLasers = 0;
     laserBullets.forEach(laser => {
         // draw laser bullets shooted
         laser.update();
         if(laser.shooted) {
             laser.xSpeed = LASER_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
             laser.ySpeed = -LASER_SPEED * Math.cos(laser.angle + 90 / 180 * Math.PI) / FPS;
+        }
+        if(laser.isOutOfBounds()) {
+            laserBullets.splice(numLasers, 1);
+        }
+        else {
+            numLasers++;
         }
     });
 
@@ -101,118 +119,6 @@ function animate(){
     }
     checkCanvasLimits();
 }
-
-class Spaceship {
-    constructor(x, y, widthMult, heightMult) {
-        this.x = x;
-        this.y = y;
-        this.rotation = 0;
-        this.accelerating = false;
-        this.xSpeed = 0;
-        this.ySpeed = 0;
-        this.angle = 0; // angle to face spaceship up
-
-        const image = new Image();
-        image.src = "../images/x-wing.png";
-        image.onload = () => {
-            this.image = image;
-            this.width = image.width * widthMult;
-            this.height = image.height * heightMult;
-        }  
-    }
-
-    draw() {
-        ctx.save(); // save context
-        ctx.translate(this.x, this.y); // translate canvas to player
-        ctx.rotate(this.angle);
-        // -this.width/2 and -this.height/2 required to correctly rotating the player with canvas
-        ctx.drawImage(this.image, -this.width/2, -this.height/2, this.width, this.height);
-        ctx.restore(); //restore context
-    }
-
-    update() {
-        if(this.image) {
-            this.x += this.xSpeed;
-            this.y += this.ySpeed;
-            this.angle += this.rotation;
-            this.draw();
-        }
-    }
-}
-
-class LaserBullet {
-    constructor(x, y, shooted, angle, laserFramesPaths) {
-        this.x = x;
-        this.y = y;
-        this.xSpeed = 0;
-        this.ySpeed = 0;
-        this.angle = angle - 90 / 180 * Math.PI; // offset to match spaceship rotation
-        this.shooted = shooted;
-        this.images = [];
-        this.imageIndex = 4;
-        this.transitionTime = 0;
-        for(var i = 0; i < laserFramesPaths.length; i++) {
-            let img = new Image(); // dunno but let works and var dont
-            img.src = laserFramesPaths[i];
-            img.addEventListener("load", () => {
-                this.images.push(img);
-                this.width = img.width * 0.75;
-                this.height = img.height * 0.75;
-            });
-        }
-    }
-
-    draw(img) {
-        ctx.save(); // save context
-        ctx.translate(this.x, this.y); // translate canvas to player
-        ctx.rotate(this.angle);
-        //console.log(img.src);
-        // -this.width/2 and -this.height/2 required to correctly rotating the player with canvas
-        ctx.drawImage(img, -this.width/2, -this.height/2, this.width, this.height);
-        ctx.restore(); //restore context
-    }
-
-    update() {
-        if(this.images[this.imageIndex]) {
-            this.x += this.xSpeed;
-            this.y += this.ySpeed;
-            this.draw(this.images[this.imageIndex]);
-        }
-        if(this.transitionTime > 5) {
-            if(this.imageIndex > 0) {
-                this.imageIndex--;
-            }
-            else {
-                this.imageIndex = 4;
-            }
-            this.transitionTime = 0;
-        }
-        else{
-            this.transitionTime++;
-        }
-    }
-}
-
-/*
-class Wart {
-    constructor(x, y, hp, angle, speed) {
-        this.x = x;
-        this.y = y;
-        this.hp = hp;
-        this.angle = angle;
-        this.xSpeed = speed * Math.cos(this.angle);
-        this.ySpeed = speed * Math.sin(this.angle);
-    }
-
-    draw() {
-
-    }
-
-    update() {
- 
-    }
-}
-*/
 
 class Syringe {
     constructor(x, y, image) {
