@@ -16,7 +16,7 @@ var laserFramesPaths = [
 var laserBullets = [];
 const exitImage = new Image();
 exitImage.src = "../images/Exit_BTN.png";
-
+var wart;
 window.onload = function() {
     canvas = document.getElementById("cnv");
     ctx = canvas.getContext("2d");
@@ -26,6 +26,8 @@ window.onload = function() {
     savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
     
     spaceship = new Spaceship(canvas.width/2, canvas.height/2, 0.15, 0.15);
+
+    generateWarts(1);
 
     animate();
 
@@ -70,6 +72,14 @@ function animate(){
     }
     //draw spaceship
     spaceship.update();
+
+    warts.forEach(wart => {
+        // draw laser bullets shooted
+        wart.xFocus = spaceship.x;
+        wart.yFocus = spaceship.y;
+        wart.update();
+    });
+
     laserBullets.forEach(laser => {
         // draw laser bullets shooted
         laser.update();
@@ -78,6 +88,7 @@ function animate(){
             laser.ySpeed = -LASER_SPEED * Math.cos(laser.angle + 90 / 180 * Math.PI) / FPS;
         }
     });
+
     if(spaceship.accelerating) { // accelerate spaceship
         spaceship.xSpeed += ACC_SPEED * Math.sin(spaceship.angle) / FPS;
         spaceship.ySpeed -= ACC_SPEED * Math.cos(spaceship.angle) / FPS;
@@ -123,7 +134,7 @@ class Spaceship {
         if(this.image) {
             this.x += this.xSpeed;
             this.y += this.ySpeed;
-            spaceship.angle += spaceship.rotation;
+            this.angle += this.rotation;
             this.draw();
         }
     }
@@ -182,6 +193,7 @@ class LaserBullet {
     }
 }
 
+/*
 class Wart {
     constructor(x, y, hp, angle, speed) {
         this.x = x;
@@ -197,9 +209,10 @@ class Wart {
     }
 
     update() {
-
+ 
     }
 }
+*/
 
 class Syringe {
     constructor(x, y, image) {
@@ -255,6 +268,7 @@ function checkCanvasLimits() { // checks if spaceship goes off limits and set it
     }
 }
 
+/*
 function generateWarts(level) {
     var wartsNum;
     if(level == 1) {
@@ -273,3 +287,4 @@ function getRandomInteger(min, max) { // function from Math.random documentation
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
+*/
