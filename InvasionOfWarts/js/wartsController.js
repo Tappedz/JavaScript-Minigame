@@ -40,20 +40,17 @@ class Wart {
     }
 
     isHitted() {
-        // needed declaration because this. doesn't work in forEach loop
-        var wartX = this.x;
-        var wartY = this.y;
-        var wartWidth = this.width;
-        var wartHeight = this.height;
-        
+        var wart = this;
+        var hitted = false;
+
         laserBullets.forEach(laser => {
-            console.log(wartX + "," + wartY);
-            if(laser.x + laser.width > wartX || laser.x < wartX + wartWidth || 
-                laser.y + laser.height > wartY || laser.y < wartY + wartHeight) {
-                return true;
+            if(isColliding(wart, laser) && !laser.hasHitted) {
+                laser.transitionTime = 0;
+                laser.hasHitted = true;
+                hitted = true;
             }
-        });
-        return false;
+        }); 
+        return hitted; 
     }
 }
 
@@ -64,7 +61,7 @@ function generateWarts(level) {
     var wartsNum;
     if(level == 1) {
         wartsNum = getRandomInteger(2, 4);
-        for(var i = 0; i < 1; i++) { // change 1 for wartsNum, currently testing
+        for(var i = 0; i < wartsNum; i++) { // change 1 for wartsNum, currently testing
             spawnedWart = new Wart(0, 0, 3, canvas.width/2, canvas.height/2);
             wartSpawnPoint = getWartSpawnInCanvasBorder();
             spawnedWart.x = wartSpawnPoint.x;
@@ -109,7 +106,17 @@ function getWartSpawnInCanvasBorder() {
     return {x, y};
 }
 
-// function for 
-function isColliding() {
+// checks if two rectangles are colliding
+function isColliding(rect1, rect2) {
+    var wartX = rect1.x;
+    var wartY = rect1.y;
+    var wartWidth = rect1.width;
+    var wartHeight = rect1.height;
+    var hitted = false;
 
+    if(rect2.x + rect2.width/2 >= wartX - wartWidth/2 && rect2.x - rect2.width/2 <= wartX + wartWidth/2 && 
+    rect2.y + rect2.height/2 >= wartY - wartHeight/2 && rect2.y - rect2.height/2 <= wartY + wartHeight/2) {
+        hitted = true;
+    }
+    return hitted;
 }

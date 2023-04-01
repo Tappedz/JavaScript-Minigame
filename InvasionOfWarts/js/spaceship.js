@@ -7,6 +7,7 @@ class Spaceship {
         this.xSpeed = 0;
         this.ySpeed = 0;
         this.angle = 0; // angle to face spaceship up
+        this.hp = 5;
 
         const image = new Image();
         image.src = "../images/x-wing.png";
@@ -24,6 +25,9 @@ class Spaceship {
         // -this.width/2 and -this.height/2 required to correctly rotating the player with canvas
         ctx.drawImage(this.image, -this.width/2, -this.height/2, this.width, this.height);
         ctx.restore(); //restore context
+        for(var i = 0; i < this.hp; i++) {
+            ctx.drawImage(this.image, canvas.width - (((this.width * 0.5) + 15) * (i+1)), 15, this.width * 0.5, this.height * 0.5);
+        }
     }
 
     update() {
@@ -34,26 +38,58 @@ class Spaceship {
             this.draw();
         }
     }
+
+    isHitted() {
+        // needed declaration because this. doesn't work in forEach loop
+        var spaceship = this;
+        var hitted = false;
+        var wartsNum = 0;
+
+        warts.forEach(wart => {
+            if(isColliding(spaceship, wart)) {
+                warts.splice(wartsNum, 1);
+                hitted = true;
+            }
+            else{
+                wartsNum++;
+            }
+        }); 
+        return hitted; 
+    }
 }
 
 class LaserBullet {
-    constructor(x, y, shooted, angle, laserFramesPaths) {
+    constructor(x, y, shooted, angle, laserFramesPaths, laserHitFramesPaths) {
         this.x = x;
         this.y = y;
         this.xSpeed = 0;
         this.ySpeed = 0;
         this.angle = angle - 90 / 180 * Math.PI; // offset to match spaceship rotation
         this.shooted = shooted;
-        this.images = [];
-        this.imageIndex = 4;
+        this.laserImages = [];
+        this.laserHitImages = [];
+        this.laserIndex = 4;
+        this.laserHitIndex = 0;
         this.transitionTime = 0;
+        this.hasHitted = false;
+        this.destroyed = false;
+
         for(var i = 0; i < laserFramesPaths.length; i++) {
             let img = new Image(); // dunno but let works and var dont
             img.src = laserFramesPaths[i];
             img.addEventListener("load", () => {
-                this.images.push(img);
+                this.laserImages.push(img);
                 this.width = img.width * 0.75;
                 this.height = img.height * 0.75;
+            });
+        }
+        for(var i = 0; i < laserHitFramesPaths.length; i++) {
+            let img = new Image();
+            img.src = laserHitFramesPaths[i];
+            img.addEventListener("load", () => {
+                this.laserHitImages.push(img);
+                //this.width = img.width * 0.75;
+                //this.height = img.height * 0.75;
             });
         }
     }
@@ -69,17 +105,17 @@ class LaserBullet {
     }
 
     update() {
-        if(this.images[this.imageIndex]) {
+        if(this.laserImages[this.laserIndex]) {
             this.x += this.xSpeed;
             this.y += this.ySpeed;
-            this.draw(this.images[this.imageIndex]);
+            this.draw(this.laserImages[this.laserIndex]);
         }
         if(this.transitionTime > 5) {
-            if(this.imageIndex > 0) {
-                this.imageIndex--;
+            if(this.laserIndex > 0) {
+                this.laserIndex--;
             }
             else {
-                this.imageIndex = 4;
+                this.laserIndex = 4;
             }
             this.transitionTime = 0;
         }
@@ -96,5 +132,25 @@ class LaserBullet {
             return true;
         }
         return false;
+    }
+
+    hits() {
+        console.log("hit");
+        if(this.laserHitImages[this.laserHitIndex]) {
+            this.draw(this.laserHitImages[this.laserHitIndex]);
+        }
+        if(this.transitionTime > 5) {
+            if(this.laserHitIndex < 5) {
+                this.laserHitIndex++;
+            }
+            else {
+                this.laserHitIndex = 0;
+                this.destroyed = true;
+            }
+            this.transitionTime = 0;
+        }
+        else{
+            this.transitionTime++;
+        }
     }
 }

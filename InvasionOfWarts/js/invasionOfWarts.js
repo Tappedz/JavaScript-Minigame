@@ -7,7 +7,7 @@ const DEC_MULT = 0.5;
 const LASER_SPEED = 150;
 // warts constants
 const WART_SPEED = 20;
-
+// exit button image
 const exitImage = new Image();
 
 var canvas, ctx, savedCanvas; 
@@ -19,6 +19,13 @@ var laserFramesPaths = [
     "../images/spark/frames/spark-preview4.png",
     "../images/spark/frames/spark-preview5.png"
 ];
+var laserHitFramesPaths = [
+    "../images/Hits-3/frames/Hits-3-1.png",
+    "../images/Hits-3/frames/Hits-3-2.png",
+    "../images/Hits-3/frames/Hits-3-3.png",
+    "../images/Hits-3/frames/Hits-3-4.png",
+    "../images/Hits-3/frames/Hits-3-5.png"
+]
 var laserBullets = [];
 
 window.onload = function() {
@@ -32,7 +39,7 @@ window.onload = function() {
     
     spaceship = new Spaceship(canvas.width/2, canvas.height/2, 0.15, 0.15);
     
-    generateWarts(1);
+    setInterval(generateWarts, 5000, 1);
 
     animate();
 
@@ -76,9 +83,19 @@ function animate(){
     if(exitImage){
         ctx.drawImage(exitImage, 15, 15, exitImage.width * 0.2, exitImage.height * 0.2);
     }
-    //draw spaceship
-    spaceship.update();
 
+    //draw spaceship
+    if(spaceship.hp > 0) {
+        spaceship.update();
+        if(spaceship.isHitted()) {
+            spaceship.hp--;
+        }
+    }
+    else {
+        // Game Over -> menu pop ups
+        window.location.href = "../html/gameOver.html";
+    }
+    var numWarts = 0;
     warts.forEach(wart => {
         // draw warts
         wart.update();
@@ -86,21 +103,33 @@ function animate(){
         wart.yFocus = spaceship.y;
         wart.xSpeed = WART_SPEED * Math.sin(wart.angle) / FPS;
         wart.ySpeed = -WART_SPEED * Math.cos(wart.angle) / FPS;
-        if(wart.isHitted()){
-            console.log("hit " + wart.x + "," + wart.y);
+        if(wart.hp > 0) {
+            if(wart.isHitted()) {
+                wart.hp--;
+            }
+            numWarts++;
         }
+        else {
+            warts.splice(numWarts,1);
+        }  
     });
-
     var numLasers = 0;
     laserBullets.forEach(laser => {
         // draw laser bullets shooted
-        laser.update();
         if(laser.shooted) {
+            laser.update();
             laser.xSpeed = LASER_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
             laser.ySpeed = -LASER_SPEED * Math.cos(laser.angle + 90 / 180 * Math.PI) / FPS;
         }
         if(laser.isOutOfBounds()) {
             laserBullets.splice(numLasers, 1);
+        }
+        else if(laser.hasHitted) {
+            laser.shooted = false;
+            laser.hits();
+            if(laser.destroyed) {
+                laserBullets.splice(numLasers, 1);
+            }
         }
         else {
             numLasers++;
@@ -141,8 +170,8 @@ function controllerPressed(/** @type {KeyboardEvent}*/ ev) {
     if(ev.key === " ") { // shooting
         var xPos = 32 * Math.cos(spaceship.angle);
         var yPos = 32 * Math.sin(spaceship.angle);
-        laserBullets.push(new LaserBullet(spaceship.x + xPos, spaceship.y + yPos, true, spaceship.angle, laserFramesPaths));
-        laserBullets.push(new LaserBullet(spaceship.x - xPos, spaceship.y - yPos, true, spaceship.angle, laserFramesPaths));
+        laserBullets.push(new LaserBullet(spaceship.x + xPos, spaceship.y + yPos, true, spaceship.angle, laserFramesPaths, laserHitFramesPaths));
+        laserBullets.push(new LaserBullet(spaceship.x - xPos, spaceship.y - yPos, true, spaceship.angle, laserFramesPaths, laserHitFramesPaths));
     }
 }
 
