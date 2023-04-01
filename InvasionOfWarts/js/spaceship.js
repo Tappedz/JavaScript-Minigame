@@ -135,7 +135,6 @@ class LaserBullet {
     }
 
     hits() {
-        console.log("hit");
         if(this.laserHitImages[this.laserHitIndex]) {
             this.draw(this.laserHitImages[this.laserHitIndex]);
         }

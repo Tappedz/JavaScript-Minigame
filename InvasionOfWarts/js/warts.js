@@ -2,13 +2,13 @@
 const imageMult = 0.1;
 
 class Wart {
-    constructor(x, y, hp, xFocus, yFocus) {
+    constructor(x, y, hp) {
         this.x = x;
         this.y = y;
         this.hp = hp;
 
-        this.xFocus = xFocus;
-        this.yFocus = yFocus;
+        this.xFocus = 0;
+        this.yFocus = 0;
         this.angle = Math.atan2(this.yFocus - this.y, this.xFocus - this.x) + 90 / 180 * Math.PI;
         this.xSpeed = 0;
         this.ySpeed = 0;
@@ -34,7 +34,7 @@ class Wart {
         if(this.image) {
             this.x += this.xSpeed;
             this.y += this.ySpeed;
-            this.angle = Math.atan2(this.yFocus - this.y, this.xFocus - this.x) + 90 / 180 * Math.PI;
+            this.angle = Math.atan2(this.yFocus - this.y, this.xFocus - this.x) + 90 / 180 * Math.PI; // calculates angle between spaceship and wart
             this.draw();
         }
     }
@@ -61,8 +61,8 @@ function generateWarts(level) {
     var wartsNum;
     if(level == 1) {
         wartsNum = getRandomInteger(2, 4);
-        for(var i = 0; i < wartsNum; i++) { // change 1 for wartsNum, currently testing
-            spawnedWart = new Wart(0, 0, 3, canvas.width/2, canvas.height/2);
+        for(var i = 0; i < wartsNum; i++) {
+            spawnedWart = new Wart(0, 0, 3);
             wartSpawnPoint = getWartSpawnInCanvasBorder();
             spawnedWart.x = wartSpawnPoint.x;
             spawnedWart.y = wartSpawnPoint.y;
@@ -76,12 +76,6 @@ function generateWarts(level) {
     else if(level == 3) {
         wartsNum = getRandomInteger(6, 8);
     }
-}
-
-function getRandomInteger(min, max) { // function from Math.random documentation
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function getWartSpawnInCanvasBorder() {

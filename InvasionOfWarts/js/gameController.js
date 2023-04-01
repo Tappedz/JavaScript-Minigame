@@ -7,26 +7,33 @@ const DEC_MULT = 0.5;
 const LASER_SPEED = 150;
 // warts constants
 const WART_SPEED = 20;
+// syringe constants
+const SYR_NUM = 5;
 // exit button image
 const exitImage = new Image();
-
-var canvas, ctx, savedCanvas; 
-var spaceship;
-var laserFramesPaths = [
+// paths for laser images
+const laserFramesPaths = [
     "../images/spark/frames/spark-preview1.png",
     "../images/spark/frames/spark-preview2.png",
     "../images/spark/frames/spark-preview3.png",
     "../images/spark/frames/spark-preview4.png",
     "../images/spark/frames/spark-preview5.png"
 ];
-var laserHitFramesPaths = [
+//paths for laset hit images
+const laserHitFramesPaths = [
     "../images/Hits-3/frames/Hits-3-1.png",
     "../images/Hits-3/frames/Hits-3-2.png",
     "../images/Hits-3/frames/Hits-3-3.png",
     "../images/Hits-3/frames/Hits-3-4.png",
     "../images/Hits-3/frames/Hits-3-5.png"
-]
+];
+
+var canvas, ctx, savedCanvas, wartGenIntId;
+
+var spaceship;
+
 var laserBullets = [];
+var syringesCollected = 0;
 
 window.onload = function() {
     canvas = document.getElementById("cnv");
@@ -36,11 +43,16 @@ window.onload = function() {
 
     //save background before drawing
     savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    
+    // create player spaceship
     spaceship = new Spaceship(canvas.width/2, canvas.height/2, 0.15, 0.15);
     
-    setInterval(generateWarts, 5000, 1);
-
+    // generate syringes
+    generateSyringes(1);
+    // first gen of warts
+    generateWarts(1);
+    // set interval to repeat warts gen
+    wartGenIntId = setInterval(generateWarts, 5000, 1);
+    // loop to animate on canvas
     animate();
 
     // key listeners
@@ -91,13 +103,32 @@ function animate(){
             spaceship.hp--;
         }
     }
-    else {
-        // Game Over -> menu pop ups
+    else { // Game Over  
+        clearInterval(wartGenIntId);
         window.location.href = "../html/gameOver.html";
     }
+
+    // draw syringes
+    var numSyringes = 0;
+    syringes.forEach(syringe => {
+        if(!syringe.isCollected()) {
+            syringe.draw();
+            numSyringes++;
+        }
+        else {
+            syringes.splice(numSyringes, 1);
+            syringesCollected++;
+        }
+    });
+
+    if(syringesCollected == 5) { // You win
+        clearInterval(wartGenIntId);
+        window.location.href = "../html/youWin.html";
+    }
+
+    // draw alive warts
     var numWarts = 0;
     warts.forEach(wart => {
-        // draw warts
         wart.update();
         wart.xFocus = spaceship.x;
         wart.yFocus = spaceship.y;
@@ -113,9 +144,10 @@ function animate(){
             warts.splice(numWarts,1);
         }  
     });
+
+    // draw shooted lasers
     var numLasers = 0;
     laserBullets.forEach(laser => {
-        // draw laser bullets shooted
         if(laser.shooted) {
             laser.update();
             laser.xSpeed = LASER_SPEED * Math.sin(laser.angle + 90 / 180 * Math.PI) / FPS;
@@ -147,14 +179,6 @@ function animate(){
 
     }
     checkCanvasLimits();
-}
-
-class Syringe {
-    constructor(x, y, image) {
-        this.x = x;
-        this.y = y;
-        this.image = image;
-    }
 }
 
 function controllerPressed(/** @type {KeyboardEvent}*/ ev) { 
@@ -203,23 +227,8 @@ function checkCanvasLimits() { // checks if spaceship goes off limits and set it
     }
 }
 
-/*
-function generateWarts(level) {
-    var wartsNum;
-    if(level == 1) {
-        wartsNum = getRandomInteger(2, 4);
-    }
-    else if(level == 2) {
-        wartsNum = getRandomInteger(4, 6);
-    }
-    else if(level == 3) {
-        wartsNum = getRandomInteger(6, 8);
-    }
-}
-
 function getRandomInteger(min, max) { // function from Math.random documentation
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
-*/
