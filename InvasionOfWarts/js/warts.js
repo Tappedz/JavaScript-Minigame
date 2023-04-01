@@ -12,6 +12,14 @@ class Wart {
         this.angle = Math.atan2(this.yFocus - this.y, this.xFocus - this.x) + 90 / 180 * Math.PI;
         this.xSpeed = 0;
         this.ySpeed = 0;
+        this.destroying = false;
+        this.destroyed = false;
+
+        this.destructionFrame = 0;
+        this.destructionTransitionTime = 0;
+
+        this.spriteWidth = 48;
+        this.spriteHeigth = 48;
 
         const image = new Image();
         image.src = "../images/wart.png";
@@ -20,6 +28,12 @@ class Wart {
             this.width = image.width * imageMult;
             this.height = image.height * imageMult;
         } 
+        const destructionSprites = new Image();
+        destructionSprites.src = "../images/explosions/wartExplosion.png";
+        destructionSprites.onload = () => {
+            this.destructionSprites = destructionSprites;
+        }
+
     }
 
     draw() {
@@ -51,6 +65,32 @@ class Wart {
             }
         }); 
         return hitted; 
+    }
+
+    explode() {
+        this.destroying = true;
+        if(!this.destroyed) {
+            if(this.destructionSprites) {
+                ctx.save(); // save context
+                ctx.translate(this.x, this.y); // translate canvas to player
+                ctx.rotate(this.angle);
+                ctx.drawImage(this.destructionSprites, this.destructionFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
+                ctx.restore(); //restore context
+                if(this.destructionTransitionTime > 80) {
+                    if(this.destructionFrame < 8) {
+                        this.destructionFrame++;
+                    }
+                    else {
+                        this.destroyed = true;
+                        this.destructionFrame = 0;
+                    }
+                }
+                else {
+                    this.destructionTransitionTime++;
+                }
+            }
+            
+        } 
     }
 }
 

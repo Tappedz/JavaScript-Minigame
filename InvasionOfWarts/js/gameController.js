@@ -44,7 +44,7 @@ window.onload = function() {
     //save background before drawing
     savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
     // create player spaceship
-    spaceship = new Spaceship(canvas.width/2, canvas.height/2, 0.15, 0.15);
+    spaceship = new Spaceship(canvas.width/2, canvas.height/2, 2, 2);
     
     // generate syringes
     generateSyringes(1);
@@ -99,11 +99,25 @@ function animate(){
     //draw spaceship
     if(spaceship.hp > 0) {
         spaceship.update();
+        if(spaceship.accelerating) { // accelerate spaceship
+            spaceship.xSpeed += ACC_SPEED * Math.sin(spaceship.angle) / FPS;
+            spaceship.ySpeed -= ACC_SPEED * Math.cos(spaceship.angle) / FPS;
+            spaceship.drawEngine();
+        }
+        else { // decelerate spaceship creating some kind of resistance (friction)
+            spaceship.xSpeed -= DEC_MULT * spaceship.xSpeed / FPS;
+            spaceship.ySpeed -= DEC_MULT * spaceship.ySpeed / FPS;
+    
+        }
+        if(spaceship.shooting) {
+            spaceship.drawWeapons();
+        }
         if(spaceship.isHitted()) {
             spaceship.hp--;
         }
     }
     else { // Game Over  
+        spaceship.explode();
         clearInterval(wartGenIntId);
         window.location.href = "../html/gameOver.html";
     }
@@ -129,11 +143,13 @@ function animate(){
     // draw alive warts
     var numWarts = 0;
     warts.forEach(wart => {
-        wart.update();
-        wart.xFocus = spaceship.x;
-        wart.yFocus = spaceship.y;
-        wart.xSpeed = WART_SPEED * Math.sin(wart.angle) / FPS;
-        wart.ySpeed = -WART_SPEED * Math.cos(wart.angle) / FPS;
+        if(!wart.destroying) {
+            wart.update();
+            wart.xFocus = spaceship.x;
+            wart.yFocus = spaceship.y;
+            wart.xSpeed = WART_SPEED * Math.sin(wart.angle) / FPS;
+            wart.ySpeed = -WART_SPEED * Math.cos(wart.angle) / FPS;
+        }
         if(wart.hp > 0) {
             if(wart.isHitted()) {
                 wart.hp--;
@@ -141,7 +157,10 @@ function animate(){
             numWarts++;
         }
         else {
-            warts.splice(numWarts,1);
+            wart.explode();
+            if(wart.destroyed) {
+                warts.splice(numWarts,1);
+            }
         }  
     });
 
@@ -167,17 +186,7 @@ function animate(){
             numLasers++;
         }
     });
-
-    if(spaceship.accelerating) { // accelerate spaceship
-        spaceship.xSpeed += ACC_SPEED * Math.sin(spaceship.angle) / FPS;
-        spaceship.ySpeed -= ACC_SPEED * Math.cos(spaceship.angle) / FPS;
-        //drawPropulsionFire();
-    }
-    else { // decelerate spaceship creating some kind of resistance (friction)
-        spaceship.xSpeed -= DEC_MULT * spaceship.xSpeed / FPS;
-        spaceship.ySpeed -= DEC_MULT * spaceship.ySpeed / FPS;
-
-    }
+    
     checkCanvasLimits();
 }
 
@@ -192,8 +201,9 @@ function controllerPressed(/** @type {KeyboardEvent}*/ ev) {
         spaceship.rotation = ROT_SPEED / 180 * Math.PI / FPS;
     }
     if(ev.key === " ") { // shooting
-        var xPos = 32 * Math.cos(spaceship.angle);
-        var yPos = 32 * Math.sin(spaceship.angle);
+        spaceship.shooting = true;
+        var xPos = 20 * Math.cos(spaceship.angle);
+        var yPos = 20 * Math.sin(spaceship.angle);
         laserBullets.push(new LaserBullet(spaceship.x + xPos, spaceship.y + yPos, true, spaceship.angle, laserFramesPaths, laserHitFramesPaths));
         laserBullets.push(new LaserBullet(spaceship.x - xPos, spaceship.y - yPos, true, spaceship.angle, laserFramesPaths, laserHitFramesPaths));
     }
@@ -208,6 +218,9 @@ function controllerReleased(/** @type {KeyboardEvent}*/ ev) {
     }
     if(ev.key === "ArrowRight") { // arrowright event (stop spaceship rotation)
         spaceship.rotation = 0;
+    }
+    if(ev.key === " ") { // shooting
+        spaceship.shooting = false;
     }
 }
 

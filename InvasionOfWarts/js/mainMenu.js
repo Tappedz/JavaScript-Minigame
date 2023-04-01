@@ -21,10 +21,7 @@ window.onload = function() {
         window.location.href("../html/invasionOfWarts.html");
     };
     */
-    gameImage.src = "../images/x-wing.png";
-    gameImage.onload = () => {
-        ctx.drawImage(gameImage, canvas.width/2 - gameImage.width * 0.15/2, (canvas.height/2 - gameImage.height * 0.15/2) - 50, gameImage.width * 0.15, gameImage.height * .15);
-    }
+    gameImage.src = "../images/spaceship/Fighter-spaceship.png";
 
     document.addEventListener("click", function (e) {
         startGame(canvas, e);
@@ -51,7 +48,7 @@ function animate(){
     //ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(savedCanvas, 0, 0);
     if(gameImage) {
-        ctx.drawImage(gameImage, canvas.width/2 - gameImage.width * 0.15/2, (canvas.height/2 - gameImage.height * 0.15/2) - 50, gameImage.width * 0.15, gameImage.height * 0.15);
+        ctx.drawImage(gameImage, canvas.width/2 - gameImage.width, (canvas.height/2 - gameImage.height) - 50, gameImage.width * 2, gameImage.height * 2);
     }
     if(startGameButtonImage) {
         ctx.drawImage(startGameButtonImage, canvas.width/2 - startGameButtonImage.width * 0.2/2, (canvas.height/2 - startGameButtonImage.height * 0.2/2) + 25, startGameButtonImage.width * 0.2, startGameButtonImage.height * 0.2);
