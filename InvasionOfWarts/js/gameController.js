@@ -13,19 +13,19 @@ const SYR_NUM = 5;
 const exitImage = new Image();
 // paths for laser images
 const laserFramesPaths = [
-    "../images/spark/frames/spark-preview1.png",
-    "../images/spark/frames/spark-preview2.png",
-    "../images/spark/frames/spark-preview3.png",
-    "../images/spark/frames/spark-preview4.png",
-    "../images/spark/frames/spark-preview5.png"
+    "../images/spark/spark-preview1.png",
+    "../images/spark/spark-preview2.png",
+    "../images/spark/spark-preview3.png",
+    "../images/spark/spark-preview4.png",
+    "../images/spark/spark-preview5.png"
 ];
 //paths for laset hit images
 const laserHitFramesPaths = [
-    "../images/Hits-3/frames/Hits-3-1.png",
-    "../images/Hits-3/frames/Hits-3-2.png",
-    "../images/Hits-3/frames/Hits-3-3.png",
-    "../images/Hits-3/frames/Hits-3-4.png",
-    "../images/Hits-3/frames/Hits-3-5.png"
+    "../images/hit/Hits-3-1.png",
+    "../images/hit/Hits-3-2.png",
+    "../images/hit/Hits-3-3.png",
+    "../images/hit/Hits-3-4.png",
+    "../images/hit/Hits-3-5.png"
 ];
 
 var canvas, ctx, savedCanvas, wartGenIntId;
