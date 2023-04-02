@@ -16,7 +16,6 @@ class Wart {
         this.destroyed = false;
 
         this.destructionFrame = 0;
-        this.destructionTransitionTime = 0;
 
         this.spriteWidth = 48;
         this.spriteHeigth = 48;
@@ -76,17 +75,12 @@ class Wart {
                 ctx.rotate(this.angle);
                 ctx.drawImage(this.destructionSprites, this.destructionFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
                 ctx.restore(); //restore context
-                if(this.destructionTransitionTime > 80) {
-                    if(this.destructionFrame < 8) {
-                        this.destructionFrame++;
-                    }
-                    else {
-                        this.destroyed = true;
-                        this.destructionFrame = 0;
-                    }
+                if(this.destructionFrame < 8) {
+                    this.destructionFrame++;
                 }
                 else {
-                    this.destructionTransitionTime++;
+                    this.destroyed = true;
+                    this.destructionFrame = 0;
                 }
             }
             

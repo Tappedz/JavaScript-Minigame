@@ -3,6 +3,17 @@ class Syringe {
         this.x = x;
         this.y = y;
         this.picked = false;
+        this.pickUpAnim = false;
+
+        this.spriteWidth = 32;
+        this.spriteHeigth = 32;
+
+        this.pickedUpFrame = 2;
+        const pickedUpSprites = new Image();
+        pickedUpSprites.src = "../images/explosions/pickUpSyringe.png";
+        pickedUpSprites.onload = () => {
+            this.pickedUpSprites = pickedUpSprites;
+        }
 
         const image = new Image();
         image.src = "../images/syringe.png";
@@ -21,9 +32,28 @@ class Syringe {
 
     isCollected() {
         if(isColliding(spaceship, this)) {
-            this.picked = true;
+            this.pickedUpAnim = true;
         }
-        return this.picked;
+        return this.pickedUpAnim;
+    }
+
+    pickedUp() {
+        if(!this.picked) {
+            if(this.pickedUpSprites) {
+                ctx.save(); // save context
+                ctx.translate(this.x, this.y); // translate canvas to player
+                ctx.rotate(this.angle);
+                ctx.drawImage(this.pickedUpSprites, this.pickedUpFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width/2, -this.height/2, this.width, this.height);
+                ctx.restore(); //restore context
+                if(this.pickedUpFrame > 0) {
+                    this.pickedUpFrame--;
+                }
+                else {
+                    this.picked = true;
+                    this.pickedUpFrame = 2;
+                }
+            }
+        } 
     }
 }
 

@@ -14,9 +14,6 @@ class Spaceship {
         this.engineFrame = 0;
         this.weaponFrame = 0;
         this.destructionFrame = 0;
-        this.engineTransitionTime = 0;
-        this.weaponTransitionTime = 0;
-        this.destructionTransitionTime = 0;
 
         this.spriteWidth = 64;
         this.spriteHeigth = 64;
@@ -65,16 +62,11 @@ class Spaceship {
             // iterate through png using drawImage()
             ctx.drawImage(this.engineSprites, this.engineFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
             ctx.restore(); //restore context
-            if(this.engineTransitionTime > 1000 / FPS) {
-                if(this.engineFrame < 10) {
-                    this.engineFrame++;
-                }
-                else {
-                    this.engineFrame = 0;
-                }
+            if(this.engineFrame < 10) {
+                this.engineFrame++;
             }
             else {
-                this.engineTransitionTime++;
+                this.engineFrame = 0;
             }
         }
     }
@@ -86,16 +78,11 @@ class Spaceship {
             ctx.rotate(this.angle);
             ctx.drawImage(this.weaponsSprites, this.weaponFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
             ctx.restore(); //restore context
-            if(this.weaponTransitionTime > 1000 / FPS) {
-                if(this.weaponFrame < 10) {
-                    this.weaponFrame++;
-                }
-                else {
-                    this.weaponFrame = 0;
-                }
+            if(this.weaponFrame < 10) {
+                this.weaponFrame++;
             }
             else {
-                this.weaponTransitionTime++;
+                this.weaponFrame = 0;
             }
         }
     }
@@ -116,7 +103,7 @@ class Spaceship {
         var wartsNum = 0;
 
         warts.forEach(wart => {
-            if(isColliding(spaceship, wart)) {
+            if(isColliding(spaceship, wart) && !wart.destroying) {
                 warts.splice(wartsNum, 1);
                 hitted = true;
             }
@@ -135,20 +122,14 @@ class Spaceship {
                 ctx.rotate(this.angle);
                 ctx.drawImage(this.destructionSprites, this.destructionFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
                 ctx.restore(); //restore context
-                if(this.destructionTransitionTime > 80) {
-                    if(this.destructionFrame < 9) {
-                        this.destructionFrame++;
-                    }
-                    else {
-                        this.destroyed = true;
-                        this.destructionFrame = 0;
-                    }
+                if(this.destructionFrame < 9) {
+                    this.destructionFrame++;
                 }
                 else {
-                    this.destructionTransitionTime++;
+                    this.destroyed = true;
+                    this.destructionFrame = 0;
                 }
             }
-            
         } 
     }
 }
@@ -165,7 +146,6 @@ class LaserBullet {
         this.laserHitImages = [];
         this.laserIndex = 4;
         this.laserHitIndex = 0;
-        this.transitionTime = 0;
         this.hasHitted = false;
         this.destroyed = false;
 
@@ -205,17 +185,11 @@ class LaserBullet {
             this.y += this.ySpeed;
             this.draw(this.laserImages[this.laserIndex]);
         }
-        if(this.transitionTime > 5) {
-            if(this.laserIndex > 0) {
-                this.laserIndex--;
-            }
-            else {
-                this.laserIndex = 4;
-            }
-            this.transitionTime = 0;
+        if(this.laserIndex > 0) {
+            this.laserIndex--;
         }
-        else{
-            this.transitionTime++;
+        else {
+            this.laserIndex = 4;
         }
     }
 
@@ -233,18 +207,13 @@ class LaserBullet {
         if(this.laserHitImages[this.laserHitIndex]) {
             this.draw(this.laserHitImages[this.laserHitIndex]);
         }
-        if(this.transitionTime > 5) {
-            if(this.laserHitIndex < 5) {
-                this.laserHitIndex++;
-            }
-            else {
-                this.laserHitIndex = 0;
-                this.destroyed = true;
-            }
-            this.transitionTime = 0;
+        if(this.laserHitIndex < 5) {
+            this.laserHitIndex++;
         }
-        else{
-            this.transitionTime++;
+        else {
+            this.laserHitIndex = 0;
+            this.destroyed = true;
         }
+
     }
 }
