@@ -33,7 +33,7 @@ var canvas, ctx, savedCanvas, wartGenIntId;
 var now, delta;
 var then = Date.now();
 
-var spaceship;
+var spaceship, score;
 
 var laserBullets = [];
 var syringesCollected = 0;
@@ -48,7 +48,7 @@ window.onload = function() {
     savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
     // create player spaceship
     spaceship = new Spaceship(canvas.width/2, canvas.height/2, 2, 2);
-    
+    score = 0;
     // generate syringes
     generateSyringes(1);
     // first gen of warts
@@ -90,7 +90,7 @@ function resizeCanvas() {
 
 function animate(){
     requestAnimationFrame(animate);
-    // frame rate controll https://gist.github.com/elundmark/38d3596a883521cb24f5 use time and FPS to set a refresh rate
+    // frame rate control https://gist.github.com/elundmark/38d3596a883521cb24f5 use time and FPS to set a refresh rate
     now = Date.now();
     delta = now - then;
 
@@ -149,6 +149,7 @@ function animate(){
         });
 
         if(syringesCollected == 5) { // You win
+            window.localStorage.setItem("score", score);
             clearInterval(wartGenIntId);
             window.location.href = "../html/youWin.html";
         }
@@ -172,6 +173,7 @@ function animate(){
             else {
                 wart.explode();
                 if(wart.destroyed) {
+                    score++;
                     warts.splice(numWarts,1);
                 }
             }  

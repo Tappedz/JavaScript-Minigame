@@ -12,9 +12,21 @@ body {
     flex-direction: row;
 }
 
-#mainMenuButton, #replayButton {
+.button {
     width: 64px;
     height: 64px;
     margin: 16px;
+}
+
+#menuButton:hover {
+    content: url(../images/Close_BTN_hover.png);
+}
+
+#replayButton:hover {
+    content: url(../images/Replay_BTN_hover.png);
+}
+
+#textImage, #menuButton, #replayButton {
+    animation: zoom 3s ease-out;
 }
 

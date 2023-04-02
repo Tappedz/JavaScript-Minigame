@@ -1,6 +1,47 @@
 body {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-evenly;
 }
+
+#mainMenuButton {
+    z-index: 1;
+    content: url(../images/Close_BTN.png);
+    width: 64px;
+    height: 64px;
+    margin: 16px;
+    animation: zoom 3s ease-out;
+}
+
+#mainMenuButton:hover {
+    content: url(../images/Close_BTN_hover.png);
+}
+
+#winImageDiv {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: zoom 3s ease-out;
+}
+
+#scoreDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center; 
+}
+
+.textImage {
+    margin: 16px;
+}
+
+#scoreNum {
+    color: white;
+    font-size: 50px;
+    margin-left: 16px;
+    font-family: fantasy;
+}
+

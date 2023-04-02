@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../css/invasionOfWarts.css" rel="stylesheet" type="text/css">
+    <link href="../css/animations.css" rel="stylesheet" type="text/css">
     <link href="../css/gameOver.css" rel="stylesheet" type="text/css">
     <link rel="shortcut icon" type="image/x-icon" href="../images/syringe.png" />
     <script type="text/javascript">
@@ -20,10 +21,10 @@
 <body>
     <div id="stars"></div>
     <div id="blink"></div>
-    <img src="../images/youLose.png">
+    <img id="textImage" src="../images/youLose.png">
     <div id="buttons">
-        <img id="mainMenuButton" onclick="goToMenu()" src="../images/Close_BTN.png">
-        <img id="replayButton" onclick="replay()" src="../images/Replay_BTN.png">
+        <img class="button" id="menuButton" onclick="goToMenu()" src="../images/Close_BTN.png">
+        <img class="button" id="replayButton" onclick="replay()" src="../images/Replay_BTN.png">
     </div>
 </body>
 </html>

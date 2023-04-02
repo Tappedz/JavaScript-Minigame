@@ -5,13 +5,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../css/invasionOfWarts.css" rel="stylesheet" type="text/css">
+    <link href="../css/animations.css" rel="stylesheet" type="text/css">
     <link href="../css/youWin.css" rel="stylesheet" type="text/css">
     <link rel="shortcut icon" type="image/x-icon" href="../images/syringe.png" />
+    <script type="text/javascript">
+        function goToMenu() {
+            console.log("clicked");
+            window.location.href = "mainMenu.html";
+        }
+
+        window.onload = function() {
+            var score = document.getElementById("scoreNum");
+            score.innerHTML = localStorage.getItem("score");
+        }
+    </script>
     <title>You win!</title>
 </head>
 <body>
     <div id="stars"></div>
     <div id="blink"></div>
-    <img src="../images/youWin.png">
+    <img id="mainMenuButton" onclick="goToMenu()">
+    <div id="winImageDiv">
+        <img class="textImage" src="../images/youWin.png">
+        <div id="scoreDiv">
+            <img class="textImage" src="../images/score.png">
+            <p id="scoreNum"></p>
+        </div>
+    </div> 
 </body>
 </html>
