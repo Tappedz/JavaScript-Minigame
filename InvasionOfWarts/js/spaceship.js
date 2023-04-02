@@ -1,5 +1,5 @@
 class Spaceship {
-    constructor(x, y, widthMult, heightMult) {
+    constructor(x, y, hp, widthMult, heightMult) {
         this.x = x;
         this.y = y;
         this.rotation = 0;
@@ -7,9 +7,10 @@ class Spaceship {
         this.xSpeed = 0;
         this.ySpeed = 0;
         this.angle = 0; // angle to face spaceship up
-        this.hp = 3;
+        this.hp = hp;
         this.shooting = false;
         this.destroyed = false;
+        this.damaged = false;
 
         this.engineFrame = 0;
         this.weaponFrame = 0;
@@ -49,9 +50,6 @@ class Spaceship {
         // -this.width/2 and -this.height/2 required to correctly rotating the player with canvas
         ctx.drawImage(this.spaceshipImage, -this.width, -this.height, this.width * 2, this.height * 2);
         ctx.restore(); //restore context
-        for(var i = 0; i < this.hp; i++) {
-            ctx.drawImage(this.spaceshipImage, canvas.width - (((this.width * 1.5)) * (i+1)), 0, this.width * 1.5, this.height * 1.5);
-        }
     }
 
     drawEngine() {
@@ -62,7 +60,7 @@ class Spaceship {
             // iterate through png using drawImage()
             ctx.drawImage(this.engineSprites, this.engineFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
             ctx.restore(); //restore context
-            if(this.engineFrame < 10) {
+            if(this.engineFrame < 9) {
                 this.engineFrame++;
             }
             else {
@@ -78,11 +76,29 @@ class Spaceship {
             ctx.rotate(this.angle);
             ctx.drawImage(this.weaponsSprites, this.weaponFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
             ctx.restore(); //restore context
-            if(this.weaponFrame < 10) {
+            if(this.weaponFrame < 5) {
                 this.weaponFrame++;
             }
             else {
+                this.shooting = false;
                 this.weaponFrame = 0;
+            }
+        }
+    }
+
+    drawAnimationHit() {
+        if(this.destructionSprites) {
+            ctx.save(); // save context
+            ctx.translate(this.x, this.y); // translate canvas to player
+            ctx.rotate(this.angle);
+            ctx.drawImage(this.destructionSprites, this.destructionFrame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeigth, -this.width, -this.height, this.width * 2, this.height * 2);
+            ctx.restore(); //restore context
+            if(this.destructionFrame < 2) {
+                this.destructionFrame++;
+            }
+            else {
+                this.damaged = false;
+                this.destructionFrame = 0;
             }
         }
     }
@@ -92,7 +108,18 @@ class Spaceship {
             this.x += this.xSpeed;
             this.y += this.ySpeed;
             this.angle += this.rotation;
-            this.draw();
+            if(this.damaged) {
+                this.drawAnimationHit();
+            }
+            else {
+                this.draw();
+            } 
+            if(this.shooting) {
+                this.drawWeapons();
+            }
+            if(this.accelerating) {
+                spaceship.drawEngine();
+            }
         }
     }
 
@@ -105,6 +132,7 @@ class Spaceship {
         warts.forEach(wart => {
             if(isColliding(spaceship, wart) && !wart.destroying) {
                 warts.splice(wartsNum, 1);
+                this.damaged = true;
                 hitted = true;
             }
             else{

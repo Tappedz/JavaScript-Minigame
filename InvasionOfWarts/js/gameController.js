@@ -34,7 +34,7 @@ var now, delta;
 var then = Date.now();
 
 var spaceship, score;
-
+var spaceshipHP = [];
 var laserBullets = [];
 var syringesCollected = 0;
 
@@ -47,7 +47,11 @@ window.onload = function() {
     //save background before drawing
     savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
     // create player spaceship
-    spaceship = new Spaceship(canvas.width/2, canvas.height/2, 2, 2);
+    spaceship = new Spaceship(canvas.width/2, canvas.height/2, 3, 2, 2);
+    // create spaceships for HP UI
+    for(var i = 0; i < spaceship.hp; i++) {
+        spaceshipHP.push(new Spaceship(canvas.width - 96 * (i+1), 48, 3, 1.5, 1.5));
+    }
     score = 0;
     // generate syringes
     generateSyringes(1);
@@ -106,18 +110,28 @@ function animate(){
         //draw spaceship
         if(spaceship.hp > 0) {
             spaceship.update();
+            // draw spaceship HP
+            var drawedHP = 0;
+            spaceshipHP.forEach(spship => {
+                if(spaceship.hp > drawedHP) {
+                    spship.update();
+                    drawedHP++;
+                }
+                else { // animation when losing HP
+                    spship.explode();
+                    if(spship.destroyed) {
+                        spaceshipHP.splice(drawedHP, 1);
+                    }
+                }   
+            });
             if(spaceship.accelerating) { // accelerate spaceship
                 spaceship.xSpeed += ACC_SPEED * Math.sin(spaceship.angle) / FPS;
                 spaceship.ySpeed -= ACC_SPEED * Math.cos(spaceship.angle) / FPS;
-                spaceship.drawEngine();
             }
             else { // decelerate spaceship creating some kind of resistance (friction)
                 spaceship.xSpeed -= DEC_MULT * spaceship.xSpeed / FPS;
                 spaceship.ySpeed -= DEC_MULT * spaceship.ySpeed / FPS;
 
-            }
-            if(spaceship.shooting) {
-                spaceship.drawWeapons();
             }
             if(spaceship.isHitted()) {
                 spaceship.hp--;
@@ -149,7 +163,7 @@ function animate(){
         });
 
         if(syringesCollected == 5) { // You win
-            window.localStorage.setItem("score", score);
+            window.localStorage.setItem("score", score); // pass score to win title
             clearInterval(wartGenIntId);
             window.location.href = "../html/youWin.html";
         }
