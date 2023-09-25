@@ -25,3 +25,5 @@ match with warts.
 
 Hordes of alien warts try to attack your spaceship while you collect syringes lost in outer
 space to stop the invasion. As you can see it's a game based on the famous atari game asteroids.
+
+Deployed Page: https://tappedz.github.io/JavaScript-Minigame/
